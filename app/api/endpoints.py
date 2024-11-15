@@ -32,6 +32,16 @@ def get_raicesMultiples(params: raicesMParams):
     result = raicesMultiples(eqn,eqn1,eqn2,xo,tol)
     return {"result": result}
 
+@router.post("/reglaFalsa")
+def get_reglaFalsa(params: biseccionParams):
+
+    eqn = params.eqn
+    xi = params.xi
+    xf = params.xf
+    tol = params.tol
+    result = reglaFalsa(eqn,xi,xf,tol)
+    return {"result": result}
+
 #@router.get("/add/{a}/{b}")
 #def get_add(a: int, b: int):
 #    result = add(a,b)

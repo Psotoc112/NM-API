@@ -14,3 +14,9 @@ class raicesMParams(BaseModel):
     eqn2: str
     xo: float
     tol: float
+
+class reglaFalsaParams(BaseModel):
+    eqn: str
+    xi: float
+    xf: float
+    tol: float
