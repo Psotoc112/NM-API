@@ -1,6 +1,7 @@
 from fastapi import FastAPI
 from pydantic import BaseModel
 from typing import Dict
+from typing import List
 
 class biseccionParams(BaseModel):
     eqn: str
@@ -32,3 +33,7 @@ class puntoFParams(BaseModel):
     eqn2: str
     valorA: float
     tol: float
+
+class spline1Params(BaseModel):
+    x: List[float]
+    y: List[float]

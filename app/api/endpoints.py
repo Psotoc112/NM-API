@@ -61,3 +61,10 @@ def get_puntoFijo(params: puntoFParams):
     tol = params.tol
     result = newton(eqn,eqn2,a,tol)
     return {"result": result}
+
+@router.post("/splineLineal")
+def get_splineLineal(params: spline1Params):
+    x = params.x
+    y = params.y
+    result = splineLineal(x,y)
+    return {"result": result}

@@ -158,3 +158,15 @@ def puntoFijo(eqn_,eqn2_,valorA_,tol_):
         respuesta = np.nan
         
     return("la raiz es: " + str(respuesta), "Error: ", tramo)
+
+def splineLineal(x, y):
+    trazadores = []
+    n = len(x)
+    
+    for i in range(n - 1):
+     
+        m = (y[i + 1] - y[i]) / (x[i + 1] - x[i]) 
+        b = y[i] - m * x[i] 
+        trazadores.append(f"{m:.6f}x + {b:.6f}")
+    
+    return trazadores
