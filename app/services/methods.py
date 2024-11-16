@@ -1,6 +1,7 @@
 # app/services/methods.py
 
 from sympy import *
+import numpy as np
 
 
 def biseccion(eqn,xi,xf,tol):
@@ -129,3 +130,31 @@ def newton(eqn_,eqn1_,xo,tol):
         return "Se encontró una raíz en: " + str(xo) + " con: " + str(cont) + " iteraciones"
     else:
         return "El método no logró converger"
+    
+
+def puntoFijo(eqn_,eqn2_,valorA_,tol_):
+
+    eqn = sympify(eqn_)
+    fx = lambda x:eqn.subs({'x':x})
+    
+    eqn2 = sympify(eqn2_)
+    gx = lambda x:eqn2.subs({'x':x})
+    
+    a = valorA_
+    tolera = tol_
+    iteramax = 100000
+    i = 0 
+    b = gx(a)
+    tramo = abs(b-a)
+
+    while(tramo>=tolera and i<=iteramax):
+        a = b
+        b = gx(a)
+        tramo = abs(b-a)
+        i = i + 1
+    respuesta = b
+    
+    if (i>=iteramax ):
+        respuesta = np.nan
+        
+    return("la raiz es: " + str(respuesta), "Error: ", tramo)

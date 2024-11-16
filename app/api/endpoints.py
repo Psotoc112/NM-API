@@ -51,3 +51,13 @@ def get_newton(params: newtonParams):
     tol = params.tol
     result = newton(eqn,eqn1,xo,tol)
     return {"result": result}
+
+@router.post("/puntoFijo")
+def get_puntoFijo(params: puntoFParams):
+
+    eqn = params.eqn
+    eqn2 = params.eqn2
+    a = params.valorA
+    tol = params.tol
+    result = newton(eqn,eqn2,a,tol)
+    return {"result": result}

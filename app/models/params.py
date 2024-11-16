@@ -26,3 +26,9 @@ class newtonParams(BaseModel):
     eqn1: str
     xo: float
     tol: float
+
+class puntoFParams(BaseModel):
+    eqn: str
+    eqn2: str
+    valorA: float
+    tol: float
