@@ -20,3 +20,9 @@ class reglaFalsaParams(BaseModel):
     xi: float
     xf: float
     tol: float
+
+class newtonParams(BaseModel):
+    eqn: str
+    eqn1: str
+    xo: float
+    tol: float

@@ -33,7 +33,7 @@ def get_raicesMultiples(params: raicesMParams):
     return {"result": result}
 
 @router.post("/reglaFalsa")
-def get_reglaFalsa(params: biseccionParams):
+def get_reglaFalsa(params: reglaFalsaParams):
 
     eqn = params.eqn
     xi = params.xi
@@ -42,7 +42,12 @@ def get_reglaFalsa(params: biseccionParams):
     result = reglaFalsa(eqn,xi,xf,tol)
     return {"result": result}
 
-#@router.get("/add/{a}/{b}")
-#def get_add(a: int, b: int):
-#    result = add(a,b)
-#    return {"result": result} 
+@router.post("/newton")
+def get_newton(params: newtonParams):
+
+    eqn = params.eqn
+    eqn1 = params.eqn1
+    xo = params.xo
+    tol = params.tol
+    result = newton(eqn,eqn1,xo,tol)
+    return {"result": result}
