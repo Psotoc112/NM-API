@@ -512,3 +512,51 @@ def eliminacion_gaussiana(A, b):
         "matriz_aumentada": matriz_aumentada.tolist(),
         "soluciones": soluciones,
     }
+
+def pivoteo_parcial(A, b):
+    """
+    Método de Pivoteo Parcial para resolver sistemas de ecuaciones lineales.
+
+    Args:
+        A (list[list[float]]): Matriz de coeficientes (cuadrada).
+        b (list[float]): Vector de términos independientes.
+
+    Returns:
+        dict: Resultado con las soluciones o mensaje de error.
+    """
+    # Convertir A y b a matrices de numpy
+    A = np.array(A, dtype=float)
+    b = np.array(b, dtype=float).reshape(-1, 1)
+
+    # Unión de A y b para formar la matriz aumentada
+    matriz_aumentada = np.hstack((A, b))
+
+    # Número de filas
+    n = len(A)
+
+    # Aplicación del método de pivoteo parcial
+    for i in range(n):
+        # Seleccionar el valor absoluto más grande en la columna i, desde la fila i hacia abajo
+        max_index = np.argmax(abs(matriz_aumentada[i:, i])) + i
+
+        # Intercambiar la fila actual con la fila que tiene el valor absoluto mayor
+        if max_index != i:
+            matriz_aumentada[[i, max_index]] = matriz_aumentada[[max_index, i]]
+
+        # Transformar en cero las entradas de la columna i en las filas debajo del pivote
+        for j in range(i + 1, n):
+            factor = matriz_aumentada[j, i] / matriz_aumentada[i, i]
+            matriz_aumentada[j, i:] -= factor * matriz_aumentada[i, i:]
+
+    # Sustitución regresiva para encontrar las soluciones
+    x = np.zeros(n)
+    for i in range(n - 1, -1, -1):
+        x[i] = (matriz_aumentada[i, -1] - np.dot(matriz_aumentada[i, i + 1:n], x[i + 1:n])) / matriz_aumentada[i, i]
+
+    # Formatear las soluciones como una lista
+    soluciones = [{"variable": f"x{i + 1}", "valor": x[i]} for i in range(n)]
+
+    return {
+        "matriz_aumentada": matriz_aumentada.tolist(),
+        "soluciones": soluciones,
+    }
