@@ -624,3 +624,67 @@ def pivoteo_total(A, b):
         "matriz_aumentada": matriz_aumentada.tolist(),
         "soluciones": soluciones,
     }
+
+def cholesky_method(matrix_a, vector_b):
+    """
+    Método de Descomposición de Cholesky para resolver sistemas de ecuaciones lineales.
+
+    Args:
+        matrix_a (list[list[float]]): Matriz de coeficientes (cuadrada y simétrica).
+        vector_b (list[float]): Vector de términos independientes.
+
+    Returns:
+        dict: Resultado con la solución, matrices L y U, y etapas.
+    """
+    A = np.array(matrix_a, dtype=np.float64)
+    b = np.array(vector_b).reshape((-1, 1))
+
+    # Verificar que A sea simétrica
+    if not np.allclose(A, A.T):
+        raise ValueError("La matriz A debe ser simétrica para aplicar Cholesky.")
+
+    # Descomposición de Cholesky manual
+    n = A.shape[0]
+    L = np.zeros((n, n), dtype=np.float64)
+    U = np.zeros((n, n), dtype=np.float64)
+    etapas = []
+
+    for k in range(n):
+        # Calcular L[k][k]
+        sum1 = sum(L[k][p] * U[p][k] for p in range(k))
+        L[k][k] = np.sqrt(A[k][k] - sum1)
+        U[k][k] = L[k][k]
+
+        # Calcular L[i][k] para i > k
+        for i in range(k + 1, n):
+            sum2 = sum(L[i][r] * U[r][k] for r in range(k))
+            L[i][k] = (A[i][k] - sum2) / U[k][k]
+
+        # Calcular U[k][j] para j > k
+        for j in range(k + 1, n):
+            sum3 = sum(L[k][s] * U[s][j] for s in range(k))
+            U[k][j] = (A[k][j] - sum3) / L[k][k]
+
+        # Guardar la etapa actual
+        etapas.append({
+            "etapa": k + 1,
+            "L": L.copy().tolist(),
+            "U": U.copy().tolist()
+        })
+
+    # Resolviendo Ly = b (sustitución progresiva)
+    y = np.zeros_like(b, dtype=np.float64)
+    for i in range(n):
+        y[i] = (b[i] - sum(L[i][j] * y[j] for j in range(i))) / L[i][i]
+
+    # Resolviendo Ux = y (sustitución regresiva)
+    x = np.zeros_like(b, dtype=np.float64)
+    for i in range(n - 1, -1, -1):
+        x[i] = (y[i] - sum(U[i][j] * x[j] for j in range(i + 1, n))) / U[i][i]
+
+    return {
+        "solution": x.flatten().tolist(),
+        "lower_triangular_matrix": L.tolist(),
+        "upper_triangular_matrix": U.tolist(),
+        "stages": etapas
+    }
