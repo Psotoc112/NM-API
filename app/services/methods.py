@@ -468,3 +468,47 @@ def busquedas_incrementales(funcion_str, x0, intervalo, tol, max_iter):
 
     return {"mensaje": "No se encontraron raíces después del número máximo de iteraciones.", "iteraciones": tabla}
 
+def eliminacion_gaussiana(A, b):
+    """
+    Método de Eliminación Gaussiana para resolver sistemas de ecuaciones lineales.
+
+    Args:
+        A (list[list[float]]): Matriz de coeficientes (cuadrada).
+        b (list[float]): Vector de términos independientes.
+
+    Returns:
+        dict: Resultado con las soluciones o un mensaje de error.
+    """
+    # Convertir A y b a matrices de numpy
+    A = np.array(A, dtype=float)
+    b = np.array(b, dtype=float).reshape(-1, 1)
+
+    # Unión de A y b para formar la matriz aumentada
+    matriz_aumentada = np.hstack((A, b))
+
+    # Número de filas
+    n = len(A)
+
+    # Aplicación del método de eliminación gaussiana
+    for i in range(n):
+        # Verificar si el pivote es cero
+        if matriz_aumentada[i, i] == 0:
+            return {"error": f"No se puede realizar la eliminación: pivote igual a cero en la fila {i + 1}."}
+
+        # Transformar en cero las entradas de la columna i en las filas debajo del pivote
+        for j in range(i + 1, n):
+            factor = matriz_aumentada[j, i] / matriz_aumentada[i, i]
+            matriz_aumentada[j, i:] -= factor * matriz_aumentada[i, i:]
+
+    # Sustitución regresiva para encontrar las soluciones
+    x = np.zeros(n)
+    for i in range(n - 1, -1, -1):
+        x[i] = (matriz_aumentada[i, -1] - np.dot(matriz_aumentada[i, i + 1:n], x[i + 1:n])) / matriz_aumentada[i, i]
+
+    # Formatear las soluciones como una lista
+    soluciones = [{"variable": f"x{i + 1}", "valor": x[i]} for i in range(n)]
+
+    return {
+        "matriz_aumentada": matriz_aumentada.tolist(),
+        "soluciones": soluciones,
+    }
