@@ -77,3 +77,7 @@ class IncrementalSearchParams(BaseModel):
     intervalo: float 
     tol: float       
     max_iter: int     
+
+class GaussianEliminationParams(BaseModel):
+    A: List[List[float]]  
+    b: List[float]     
