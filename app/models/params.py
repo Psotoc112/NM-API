@@ -85,3 +85,7 @@ class GaussianEliminationParams(BaseModel):
 class PartialPivotingParams(BaseModel):
     A: List[List[float]]  
     b: List[float] 
+
+class TotalPivotingParams(BaseModel):
+    A: List[List[float]]  
+    b: List[float] 
