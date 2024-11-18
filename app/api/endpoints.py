@@ -249,3 +249,30 @@ def get_cholesky(params: CholeskyParams):
         raise HTTPException(status_code=400, detail=str(e))
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))
+
+@router.post("/gauss_seidel")
+def get_gauss_seidel(params: GaussSeidelParams):
+    try:
+        # Extraer los parámetros
+        A = params.A
+        b = params.b
+        x0 = params.x0
+        tol = params.tol
+        niter = params.niter
+
+        # Validar que la matriz sea cuadrada y coincida con el vector b
+        if len(A) != len(A[0]):
+            raise HTTPException(status_code=400, detail="La matriz A debe ser cuadrada.")
+        if len(A) != len(b):
+            raise HTTPException(status_code=400, detail="El tamaño de la matriz A debe coincidir con el tamaño del vector b.")
+        if len(A) != len(x0):
+            raise HTTPException(status_code=400, detail="El tamaño de la matriz A debe coincidir con el tamaño del vector inicial x0.")
+
+        # Ejecutar el método de Gauss-Seidel
+        resultado = gauss_seidel_method(A, b, x0, tol, niter)
+        return resultado
+
+    except ValueError as e:
+        raise HTTPException(status_code=400, detail=str(e))
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=str(e))
