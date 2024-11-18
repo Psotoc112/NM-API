@@ -270,7 +270,7 @@ def luPivoteo(A,b):
     
     return {"L": L.tolist(), "U": U.tolist(),"P:": P.tolist() , "x": x.tolist()}
 
-def polinomio_newton(x_valor, y_valor):
+def polinomio_Newton(x_valor, y_valor):
     """
     Calcula el polinomio interpolador de Newton para un conjunto de puntos dados.
 
