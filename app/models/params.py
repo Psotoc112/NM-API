@@ -100,3 +100,10 @@ class GaussSeidelParams(BaseModel):
     x0: List[float]      
     tol: float          
     niter: int
+
+class SecantParams(BaseModel):
+    f: str        
+    x0: float     
+    x1: float    
+    tol: float    
+    max_iter: int
