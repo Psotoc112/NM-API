@@ -81,3 +81,7 @@ class IncrementalSearchParams(BaseModel):
 class GaussianEliminationParams(BaseModel):
     A: List[List[float]]  
     b: List[float]     
+
+class PartialPivotingParams(BaseModel):
+    A: List[List[float]]  
+    b: List[float] 
