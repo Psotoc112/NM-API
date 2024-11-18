@@ -167,3 +167,23 @@ def get_incremental_search(params: IncrementalSearchParams):
 
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))
+
+@router.post("/gaussian_elimination")
+def get_gaussian_elimination(params: GaussianEliminationParams):
+    try:
+        # Extraer los parámetros
+        A = params.A
+        b = params.b
+
+        # Validar que la matriz sea cuadrada y coincida con el vector b
+        if len(A) != len(A[0]):
+            raise HTTPException(status_code=400, detail="La matriz A debe ser cuadrada.")
+        if len(A) != len(b):
+            raise HTTPException(status_code=400, detail="El tamaño de la matriz A debe coincidir con el tamaño del vector b.")
+
+        # Ejecutar el método de eliminación gaussiana
+        resultado = eliminacion_gaussiana(A, b)
+        return resultado
+
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=str(e))
