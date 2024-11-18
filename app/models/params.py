@@ -93,3 +93,10 @@ class TotalPivotingParams(BaseModel):
 class CholeskyParams(BaseModel):
     A: List[List[float]] 
     b: List[float]
+
+class GaussSeidelParams(BaseModel):
+    A: List[List[float]]  
+    b: List[float]       
+    x0: List[float]      
+    tol: float          
+    niter: int
