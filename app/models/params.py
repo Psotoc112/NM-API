@@ -89,3 +89,7 @@ class PartialPivotingParams(BaseModel):
 class TotalPivotingParams(BaseModel):
     A: List[List[float]]  
     b: List[float] 
+
+class CholeskyParams(BaseModel):
+    A: List[List[float]] 
+    b: List[float]
