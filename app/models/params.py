@@ -37,3 +37,11 @@ class puntoFParams(BaseModel):
 class spline1Params(BaseModel):
     x: List[float]
     y: List[float]
+
+class croutParams(BaseModel):
+    A: List[List[float]]
+    b: List[float]
+
+class dolittleParams(BaseModel):
+    A: List[List[float]]
+    b: List[float]

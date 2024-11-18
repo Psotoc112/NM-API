@@ -6,11 +6,6 @@ from app.models.params import *
 
 router = APIRouter()
 
-@router.get("/biseccion/{eqn}/{xi}/{xf}/{tol}")
-def get_biseccion(eqn: str, xi: float, xf: float, tol: float):
-    result = biseccion(eqn,xi,xf,tol)
-    return {"result": result}
-
 @router.post("/biseccion")
 def get_biseccion(params: biseccionParams):
 
@@ -67,4 +62,20 @@ def get_splineLineal(params: spline1Params):
     x = params.x
     y = params.y
     result = splineLineal(x,y)
+    return {"result": result}
+
+@router.post("/crout")
+def get_crout(params: croutParams):
+    A = params.A
+    b = params.b
+
+    result = crout(A,b)
+    return {"result": result}
+
+@router.post("/dolittle")
+def get_dolittle(params: dolittleParams):
+    A = params.A
+    b = params.b
+
+    result = dolittle(A,b)
     return {"result": result}
