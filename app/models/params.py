@@ -61,3 +61,10 @@ class NewtonParams(BaseModel):
 class LagrangeParams(BaseModel):
     x: List[float]
     y: List[float]
+
+class JacobiParams(BaseModel):
+    matrix_a: List[List[float]]  
+    vector_b: List[float]        
+    x0: List[float]              
+    tol: float                  
+    niter: int                   
