@@ -560,3 +560,67 @@ def pivoteo_parcial(A, b):
         "matriz_aumentada": matriz_aumentada.tolist(),
         "soluciones": soluciones,
     }
+
+def pivoteo_total(A, b):
+    """
+    Método de Pivoteo Total para resolver sistemas de ecuaciones lineales.
+
+    Args:
+        A (list[list[float]]): Matriz de coeficientes (cuadrada).
+        b (list[float]): Vector de términos independientes.
+
+    Returns:
+        dict: Resultado con las soluciones o mensaje de error.
+    """
+    # Convertir A y b a matrices de numpy
+    A = np.array(A, dtype=float)
+    b = np.array(b, dtype=float).reshape(-1, 1)
+
+    # Unión de A y b para formar la matriz aumentada
+    matriz_aumentada = np.hstack((A, b))
+
+    # Vector de seguimiento para el reordenamiento de columnas
+    orden_columnas = np.arange(len(A))
+
+    # Número de filas
+    n = len(A)
+
+    # Aplicación del método de pivoteo total
+    for i in range(n):
+        # Buscar el índice del valor absoluto máximo en la submatriz restante
+        submatriz = abs(matriz_aumentada[i:, i:n])
+        max_index = np.unravel_index(np.argmax(submatriz, axis=None), submatriz.shape)
+        max_fila = max_index[0] + i
+        max_col = max_index[1] + i
+
+        # Intercambio de filas
+        if max_fila != i:
+            matriz_aumentada[[i, max_fila]] = matriz_aumentada[[max_fila, i]]
+
+        # Intercambio de columnas
+        if max_col != i:
+            matriz_aumentada[:, [i, max_col]] = matriz_aumentada[:, [max_col, i]]
+            orden_columnas[[i, max_col]] = orden_columnas[[max_col, i]]
+
+        # Transformar en cero las entradas de la columna i en las filas debajo del pivote
+        for j in range(i + 1, n):
+            factor = matriz_aumentada[j, i] / matriz_aumentada[i, i]
+            matriz_aumentada[j, i:] -= factor * matriz_aumentada[i, i:]
+
+    # Sustitución regresiva para encontrar las soluciones
+    x = np.zeros(n)
+    for i in range(n - 1, -1, -1):
+        x[i] = (matriz_aumentada[i, -1] - np.dot(matriz_aumentada[i, i + 1:n], x[i + 1:n])) / matriz_aumentada[i, i]
+
+    # Reordenar las soluciones de acuerdo a los intercambios de columnas
+    x_final = np.zeros(n)
+    for i in range(n):
+        x_final[orden_columnas[i]] = x[i]
+
+    # Formatear las soluciones como una lista
+    soluciones = [{"variable": f"x{i + 1}", "valor": x_final[i]} for i in range(n)]
+
+    return {
+        "matriz_aumentada": matriz_aumentada.tolist(),
+        "soluciones": soluciones,
+    }
