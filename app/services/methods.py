@@ -688,3 +688,53 @@ def cholesky_method(matrix_a, vector_b):
         "upper_triangular_matrix": U.tolist(),
         "stages": etapas
     }
+
+def gauss_seidel_method(matrix_a, vector_b, x0, tol, niter):
+    """
+    Método de Gauss-Seidel para resolver sistemas de ecuaciones lineales.
+
+    Args:
+        matrix_a (list[list[float]]): Matriz de coeficientes (cuadrada).
+        vector_b (list[float]): Vector de términos independientes.
+        x0 (list[float]): Vector inicial.
+        tol (float): Tolerancia.
+        niter (int): Número máximo de iteraciones.
+
+    Returns:
+        dict: Resultado con las iteraciones, matrices y convergencia.
+    """
+    A = np.array(matrix_a, dtype=float)
+    b = np.array(vector_b, dtype=float).reshape((-1, 1))
+    x0 = np.array(x0, dtype=float).reshape((-1, 1))
+
+    # Descomposición de A en D, L y U
+    D = np.diag(np.diag(A))
+    L = -1 * np.tril(A) + D
+    U = -1 * np.triu(A) + D
+
+    # Cálculo de T y C
+    T = np.linalg.inv(D - L) @ U
+    C = np.linalg.inv(D - L) @ b
+
+    # Radio espectral
+    spectral_radius = max(abs(np.linalg.eigvals(T)))
+    converges = spectral_radius < 1
+
+    iterations = []
+    xP = x0
+    for i in range(niter):
+        xA = T @ xP + C
+        error = np.linalg.norm(xP - xA)
+        xP = xA
+
+        iterations.append({"step": i + 1, "x": xA.flatten().tolist(), "error": error})
+        if error < tol:
+            break
+
+    return {
+        "transition_matrix": T.tolist(),
+        "coefficient_matrix": C.tolist(),
+        "spectral_radius": spectral_radius,
+        "iterations": iterations,
+        "converges": converges,
+    }
