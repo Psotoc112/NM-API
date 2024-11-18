@@ -124,3 +124,25 @@ def get_lagrange(params: LagrangeParams):
 
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))
+
+@router.post("/jacobi")
+def get_jacobi(params: JacobiParams):
+    try:
+        # Extraer los parámetros
+        matrix_a = params.matrix_a
+        vector_b = params.vector_b
+        x0 = params.x0
+        tol = params.tol
+        niter = params.niter
+
+        # Validar dimensiones de la matriz y vectores
+        if len(matrix_a) != len(vector_b) or len(matrix_a[0]) != len(x0):
+            raise HTTPException(status_code=400, detail="Dimensiones de matriz y vectores no coinciden.")
+
+        # Ejecutar el método de Jacobi
+        result = jacobi_method(matrix_a, vector_b, x0, tol, niter)
+
+        return result
+
+    except ValueError as e:
+        raise HTTPException(status_code=500, detail=str(e))
