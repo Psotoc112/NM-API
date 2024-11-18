@@ -45,3 +45,7 @@ class croutParams(BaseModel):
 class dolittleParams(BaseModel):
     A: List[List[float]]
     b: List[float]
+
+class LUParams(BaseModel):
+    A: List[List[float]]
+    b: List[float]

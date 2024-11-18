@@ -129,8 +129,7 @@ def newton(eqn_,eqn1_,xo,tol):
     if err <= tol:
         return "Se encontró una raíz en: " + str(xo) + " con: " + str(cont) + " iteraciones"
     else:
-        return "El método no logró converger"
-    
+        return "El método no logró converger"    
 
 def puntoFijo(eqn_,eqn2_,valorA_,tol_):
 
@@ -204,8 +203,8 @@ def crout(A,b):
 
     return {"L": L.tolist(), "U": U.tolist(), "x": x.tolist()}
 
-
 def dolittle(A,b):
+
     Anp = np.array(A)
     bnp = np.array(b)
     n = Anp.shape[0]
@@ -222,3 +221,51 @@ def dolittle(A,b):
     x = sustitucion_regresiva(U, y)
 
     return {"L": L.tolist(), "U": U.tolist(), "x": x.tolist()}
+
+def luSimple(A,b):
+
+    Anp = np.array(A)
+    bnp = np.array(b)
+    n = Anp.shape[0]
+    L = np.zeros_like(Anp)
+    U = np.zeros_like(Anp)
+    
+    for i in range(n):
+        L[i][i] = 1
+        for j in range(i, n):
+            U[i][j] = A[i][j] - sum(L[i][k] * U[k][j] for k in range(i))
+        for j in range(i + 1, n):
+            L[j][i] = (A[j][i] - sum(L[j][k] * U[k][i] for k in range(i))) / U[i][i]
+    
+    y = sustitucion_progresiva(L, bnp)
+
+    x = sustitucion_regresiva(U, y)
+    return {"L": L.tolist(), "U": U.tolist(), "x": x.tolist()}
+
+def luPivoteo(A,b):
+    Anp = np.array(A)
+    bnp = np.array(b)
+    n = Anp.shape[0]
+    P = np.eye(n)  # Matriz de permutación
+    L = np.zeros_like(Anp)
+    U = Anp.copy()
+
+    for i in range(n):
+
+        max_index = np.argmax(np.abs(U[i:, i])) + i
+        if max_index != i:
+          
+            U[[i, max_index], :] = U[[max_index, i], :]
+            P[[i, max_index], :] = P[[max_index, i], :]
+
+            L[[i, max_index], :i] = L[[max_index, i], :i]
+        
+        L[i][i] = 1
+        for j in range(i + 1, n):
+            L[j][i] = U[j][i] / U[i][i]
+            U[j] -= L[j][i] * U[i]
+    
+    y = sustitucion_progresiva(L, np.dot(P, bnp))  # Usar P*b para b permutado
+    x = sustitucion_regresiva(U, y)
+    
+    return {"L": L.tolist(), "U": U.tolist(),"P:": P.tolist() , "x": x.tolist()}

@@ -79,3 +79,19 @@ def get_dolittle(params: dolittleParams):
 
     result = dolittle(A,b)
     return {"result": result}
+
+@router.post("/LUsimple")
+def get_LUsimple(params: LUParams):
+    A = params.A
+    b = params.b
+
+    result = luSimple(A,b)
+    return {"result": result}
+
+@router.post("/LUpartial")
+def get_LUpartial(params: LUParams):
+    A = params.A
+    b = params.b
+
+    result = luPivoteo(A,b)
+    return {"result": result}
