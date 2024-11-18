@@ -1,6 +1,6 @@
 # app/services/methods.py
 
-from sympy import *
+from sympy import * 
 import numpy as np
 
 
@@ -282,7 +282,7 @@ def polinomio_Newton(x_valor, y_valor):
         str: El polinomio de Newton en forma simbólica como cadena.
     """
     # Crear la variable simbólica x
-    x = sp.Symbol('x')
+    x = Symbol('x')
     
     # Número de puntos
     n = len(x_valor)
@@ -337,7 +337,7 @@ def lagrange(x_vals, y_vals):
         polinomio += y_vals[i] * L_i
 
     # Simplificar el polinomio resultante
-    polinomio = sp.simplify(polinomio)
+    polinomio = simplify(polinomio)
     return str(polinomio)
 
 def jacobi_method(matrix_a, vector_b, x0, tol, niter):
@@ -753,9 +753,9 @@ def secant_method(f, x0, x1, tol=1e-6, max_iter=100):
     Returns:
         dict: Resultado con la raíz encontrada, el número de iteraciones, y los detalles de las iteraciones.
     """
-    x = sp.symbols('x')
-    f_expr = sp.sympify(f)
-    f_lambdified = sp.lambdify(x, f_expr)
+    x = symbols('x')
+    f_expr = sympify(f)
+    f_lambdified = lambdify(x, f_expr)
 
     iterations = []
 
