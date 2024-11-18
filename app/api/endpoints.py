@@ -207,3 +207,23 @@ def get_partial_pivoting(params: PartialPivotingParams):
 
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))
+
+@router.post("/total_pivoting")
+def get_total_pivoting(params: TotalPivotingParams):
+    try:
+        # Extraer los parámetros
+        A = params.A
+        b = params.b
+
+        # Validar que la matriz sea cuadrada y coincida con el vector b
+        if len(A) != len(A[0]):
+            raise HTTPException(status_code=400, detail="La matriz A debe ser cuadrada.")
+        if len(A) != len(b):
+            raise HTTPException(status_code=400, detail="El tamaño de la matriz A debe coincidir con el tamaño del vector b.")
+
+        # Ejecutar el método de pivoteo total
+        resultado = pivoteo_total(A, b)
+        return resultado
+
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=str(e))
