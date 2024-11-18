@@ -317,3 +317,25 @@ def polinomio_Newton(x_valor, y_valor):
     polinomio = sp.simplify(polinomio)
     
     return polinomio
+
+def lagrange(x_vals, y_vals):
+    """
+    Calcula el polinomio de Lagrange dados puntos x_vals y y_vals.
+    """
+    x = sp.Symbol('x')
+    n = len(x_vals)
+
+    # Inicializa el polinomio como 0
+    polinomio = 0
+
+    # Construcción del polinomio de Lagrange
+    for i in range(n):
+        L_i = 1
+        for j in range(n):
+            if i != j:
+                L_i *= (x - x_vals[j]) / (x_vals[i] - x_vals[j])
+        polinomio += y_vals[i] * L_i
+
+    # Simplificar el polinomio resultante
+    polinomio = sp.simplify(polinomio)
+    return str(polinomio)
