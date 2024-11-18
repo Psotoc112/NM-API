@@ -738,3 +738,69 @@ def gauss_seidel_method(matrix_a, vector_b, x0, tol, niter):
         "iterations": iterations,
         "converges": converges,
     }
+
+def secant_method(f, x0, x1, tol=1e-6, max_iter=100):
+    """
+    Método de la Secante para encontrar raíces de una función.
+
+    Args:
+        f (str): Función matemática como cadena.
+        x0 (float): Primera estimación inicial.
+        x1 (float): Segunda estimación inicial.
+        tol (float): Tolerancia.
+        max_iter (int): Número máximo de iteraciones.
+
+    Returns:
+        dict: Resultado con la raíz encontrada, el número de iteraciones, y los detalles de las iteraciones.
+    """
+    x = sp.symbols('x')
+    f_expr = sp.sympify(f)
+    f_lambdified = sp.lambdify(x, f_expr)
+
+    iterations = []
+
+    for i in range(max_iter):
+        # Evaluar la función en los puntos actuales
+        f_x0 = f_lambdified(x0)
+        f_x1 = f_lambdified(x1)
+
+        # Verificar si f(x1) es suficientemente pequeño
+        if abs(f_x1) < tol:
+            iterations.append({"iteration": i, "x": x1, "f(x)": f_x1, "error": 0.0})
+            return {
+                "root": x1,
+                "iterations": iterations,
+                "converged": True,
+                "message": f"Root found at x = {x1} with tolerance {tol}"
+            }
+
+        # Calcular el siguiente punto usando la fórmula de la secante
+        if f_x1 == f_x0:
+            raise ValueError("Division by zero in the Secant method")
+
+        x2 = x1 - f_x1 * (x1 - x0) / (f_x1 - f_x0)
+        error = abs(x2 - x1)
+
+        # Guardar los datos de la iteración
+        iterations.append({"iteration": i, "x": x1, "f(x)": f_x1, "error": error})
+
+        # Verificar si el error es menor que la tolerancia
+        if error < tol:
+            return {
+                "root": x2,
+                "iterations": iterations,
+                "converged": True,
+                "message": f"Root found at x = {x2} with tolerance {tol}"
+            }
+
+        # Actualizar los puntos para la siguiente iteración
+        x0, x1 = x1, x2
+
+    # Si no converge
+    return {
+        "root": None,
+        "iterations": iterations,
+        "converged": False,
+        "message": "The Secant method did not converge within the maximum number of iterations"
+    }
+
