@@ -107,3 +107,20 @@ def get_newton(params: NewtonParams):
         return {"result": str(result)}
     except ValueError as e:
         raise HTTPException(status_code=400, detail=str(e))
+
+@router.post("/lagrange")
+def get_lagrange(params: LagrangeParams):
+    try:
+        x_vals = params.x
+        y_vals = params.y
+
+        # Validar que x e y tengan la misma longitud
+        if len(x_vals) != len(y_vals):
+            raise HTTPException(status_code=400, detail="Las listas x e y deben tener la misma longitud.")
+
+        # Calcular el polinomio de Lagrange
+        result = lagrange(x_vals, y_vals)
+        return {"result": result}
+
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=str(e))
