@@ -339,3 +339,53 @@ def lagrange(x_vals, y_vals):
     # Simplificar el polinomio resultante
     polinomio = sp.simplify(polinomio)
     return str(polinomio)
+
+def jacobi_method(matrix_a, vector_b, x0, tol, niter):
+    """
+    Método iterativo de Jacobi para resolver sistemas de ecuaciones lineales.
+
+    Args:
+        matrix_a (list[list[float]]): Matriz de coeficientes.
+        vector_b (list[float]): Vector de términos independientes.
+        x0 (list[float]): Vector inicial.
+        tol (float): Tolerancia.
+        niter (int): Número máximo de iteraciones.
+
+    Returns:
+        dict: Resultado con información del método.
+    """
+    A = np.array(matrix_a)
+    b = np.array(vector_b).reshape((-1, 1))
+    x0 = np.array(x0).reshape((-1, 1))
+
+    # Descomposición de A en D, L y U
+    D = np.diag(np.diag(A))
+    L = -1 * np.tril(A) + D
+    U = -1 * np.triu(A) + D
+
+    # Cálculo de T y C
+    T = np.linalg.inv(D) @ (L + U)
+    C = np.linalg.inv(D) @ b
+
+    # Radio espectral
+    spectral_radius = max(abs(np.linalg.eigvals(T)))
+    converges = spectral_radius < 1
+
+    iterations = []
+    xP = x0
+    for i in range(niter):
+        xA = T @ xP + C
+        error = np.linalg.norm(xP - xA)
+        xP = xA
+
+        iterations.append({"step": i + 1, "x": xA.flatten().tolist(), "error": error})
+        if error < tol:
+            break
+
+    return {
+        "transition_matrix": T.tolist(),
+        "coefficient_matrix": C.tolist(),
+        "spectral_radius": spectral_radius,
+        "iterations": iterations,
+        "converges": converges,
+    }
