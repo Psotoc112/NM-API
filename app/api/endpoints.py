@@ -95,3 +95,15 @@ def get_LUpartial(params: LUParams):
 
     result = luPivoteo(A,b)
     return {"result": result}
+
+@router.post("/Newton")
+def get_newton(params: NewtonParams):
+    x_valor = params.x_valor
+    y_valor = params.y_valor
+    
+    # Llama al método para calcular el polinomio de Newton
+    try:
+        result = polinomio_newton(x_valor, y_valor)
+        return {"result": str(result)}
+    except ValueError as e:
+        raise HTTPException(status_code=400, detail=str(e))
