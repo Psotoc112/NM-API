@@ -68,3 +68,12 @@ class JacobiParams(BaseModel):
     x0: List[float]              
     tol: float                  
     niter: int                   
+
+from pydantic import BaseModel
+
+class IncrementalSearchParams(BaseModel):
+    funcion: str     
+    x0: float        
+    intervalo: float 
+    tol: float       
+    max_iter: int     
