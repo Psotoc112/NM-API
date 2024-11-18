@@ -269,3 +269,51 @@ def luPivoteo(A,b):
     x = sustitucion_regresiva(U, y)
     
     return {"L": L.tolist(), "U": U.tolist(),"P:": P.tolist() , "x": x.tolist()}
+
+def polinomio_newton(x_valor, y_valor):
+    """
+    Calcula el polinomio interpolador de Newton para un conjunto de puntos dados.
+
+    Args:
+        x_valor (list[float]): Lista de valores de x.
+        y_valor (list[float]): Lista de valores de y correspondientes a x.
+
+    Returns:
+        str: El polinomio de Newton en forma simbólica como cadena.
+    """
+    # Crear la variable simbólica x
+    x = sp.Symbol('x')
+    
+    # Número de puntos
+    n = len(x_valor)
+    
+    # Matriz de diferencias divididas
+    diferencias_divididas = [[0 for _ in range(n)] for _ in range(n)]
+    
+    # Inicializar la primera columna con los valores de y
+    for i in range(n):
+        diferencias_divididas[i][0] = y_valor[i]
+    
+    # Calcular las diferencias divididas
+    for j in range(1, n):
+        for i in range(n - j):
+            denominador = (x_valor[i + j] - x_valor[i])
+            if denominador == 0:
+                raise ValueError(
+                    f"División por cero al calcular diferencias divididas: x[{i + j}] y x[{i}] son iguales"
+                )
+            diferencias_divididas[i][j] = (
+                diferencias_divididas[i + 1][j - 1] - diferencias_divididas[i][j - 1]
+            ) / denominador
+    
+    # Construir el polinomio de Newton
+    polinomio = diferencias_divididas[0][0]
+    termino = 1  # Acumula los términos del polinomio
+    for i in range(1, n):
+        termino *= (x - x_valor[i - 1])
+        polinomio += diferencias_divididas[0][i] * termino
+    
+    # Simplificar el polinomio
+    polinomio = sp.simplify(polinomio)
+    
+    return polinomio
