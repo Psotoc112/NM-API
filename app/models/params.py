@@ -57,3 +57,7 @@ class LUParams(BaseModel):
 class NewtonParams(BaseModel):
     x_valor: list[float]
     y_valor: list[float]
+
+class LagrangeParams(BaseModel):
+    x: List[float]
+    y: List[float]
