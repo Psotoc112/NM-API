@@ -389,3 +389,82 @@ def jacobi_method(matrix_a, vector_b, x0, tol, niter):
         "iterations": iterations,
         "converges": converges,
     }
+
+def procesar_funcion(funcion_str):
+    """
+    Procesa una función en cadena para reemplazar operadores incompatibles.
+    """
+    funcion_str = funcion_str.replace("ln(", "log(")  # Cambiar ln a log para logaritmo natural
+    funcion_str = funcion_str.replace("^", "**")      # Cambiar ^ a ** para potencias
+    return funcion_str
+
+def busquedas_incrementales(funcion_str, x0, intervalo, tol, max_iter):
+    """
+    Método de Búsquedas Incrementales para encontrar intervalos con raíces.
+
+    Args:
+        funcion_str (str): Función matemática como cadena.
+        x0 (float): Valor inicial.
+        intervalo (float): Tamaño del incremento.
+        tol (float): Tolerancia.
+        max_iter (int): Máximo de iteraciones.
+
+    Returns:
+        dict: Resultado con los intervalos y errores.
+    """
+    # Procesar la función y convertirla en evaluable
+    funcion_str = procesar_funcion(funcion_str)
+    f = lambda x: eval(funcion_str, {"x": x, "sin": sin, "cos": cos, "exp": exp, "log": log, "math": math})
+    
+    # Inicializar variables
+    x_i = x0
+    iteraciones = 0
+    tabla = []
+
+    # Evaluar la función inicial
+    try:
+        f_xi = f(x_i)
+    except (ValueError, ZeroDivisionError) as e:
+        return {"error": f"Error al evaluar f({x_i}): {str(e)}"}
+
+    while iteraciones < max_iter:
+        x_i_next = x_i + intervalo
+        try:
+            f_xi_next = f(x_i_next)
+        except (ValueError, ZeroDivisionError) as e:
+            return {"error": f"Error al evaluar f({x_i_next}): {str(e)}"}
+        
+        # Calcular el error absoluto
+        error_abs = abs(x_i_next - x_i)
+        tabla.append({
+            "iteracion": iteraciones + 1,
+            "x_i": x_i,
+            "f_xi": f_xi,
+            "x_i_next": x_i_next,
+            "f_xi_next": f_xi_next,
+            "error_abs": error_abs
+        })
+
+        # Verificar si hay cambio de signo
+        if f_xi * f_xi_next < 0:
+            return {
+                "intervalo_raiz": [x_i, x_i_next],
+                "iteraciones": tabla,
+                "mensaje": f"Raíz aproximada en el intervalo [{x_i}, {x_i_next}]"
+            }
+        
+        # Verificar tolerancia
+        if error_abs < tol:
+            return {
+                "intervalo_raiz": [x_i, x_i_next],
+                "iteraciones": tabla,
+                "mensaje": f"El método alcanzó la tolerancia en la iteración {iteraciones + 1}."
+            }
+
+        # Avanzar al siguiente punto
+        x_i = x_i_next
+        f_xi = f_xi_next
+        iteraciones += 1
+
+    return {"mensaje": "No se encontraron raíces después del número máximo de iteraciones.", "iteraciones": tabla}
+
