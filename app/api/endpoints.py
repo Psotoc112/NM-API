@@ -146,3 +146,24 @@ def get_jacobi(params: JacobiParams):
 
     except ValueError as e:
         raise HTTPException(status_code=500, detail=str(e))
+
+@router.post("/incremental_search")
+def get_incremental_search(params: IncrementalSearchParams):
+    try:
+        # Extraer los parámetros
+        funcion = params.funcion
+        x0 = params.x0
+        intervalo = params.intervalo
+        tol = params.tol
+        max_iter = params.max_iter
+
+        # Validar entrada
+        if intervalo <= 0:
+            raise HTTPException(status_code=400, detail="El tamaño del intervalo debe ser mayor que 0.")
+
+        # Ejecutar el método
+        resultado = busquedas_incrementales(funcion, x0, intervalo, tol, max_iter)
+        return resultado
+
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=str(e))
