@@ -49,3 +49,11 @@ class dolittleParams(BaseModel):
 class LUParams(BaseModel):
     A: List[List[float]]
     b: List[float]
+
+class LUParams(BaseModel):
+    A: List[List[float]]
+    b: List[float]
+
+class NewtonParams(BaseModel):
+    x_valor: list[float]
+    y_valor: list[float]
