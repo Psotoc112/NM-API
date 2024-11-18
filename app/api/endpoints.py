@@ -276,3 +276,22 @@ def get_gauss_seidel(params: GaussSeidelParams):
         raise HTTPException(status_code=400, detail=str(e))
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))
+
+@router.post("/secant")
+def get_secant(params: SecantParams):
+    try:
+        # Extraer los parámetros
+        f = params.f
+        x0 = params.x0
+        x1 = params.x1
+        tol = params.tol
+        max_iter = params.max_iter
+
+        # Ejecutar el método de la secante
+        resultado = secant_method(f, x0, x1, tol, max_iter)
+        return resultado
+
+    except ValueError as e:
+        raise HTTPException(status_code=400, detail=str(e))
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=str(e))
