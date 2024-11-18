@@ -103,7 +103,7 @@ def get_newton(params: NewtonParams):
     
     # Llama al método para calcular el polinomio de Newton
     try:
-        result = polinomio_newton(x_valor, y_valor)
+        result = polinomio_Newton(x_valor, y_valor)
         return {"result": str(result)}
     except ValueError as e:
         raise HTTPException(status_code=400, detail=str(e))
