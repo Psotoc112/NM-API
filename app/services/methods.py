@@ -1,6 +1,7 @@
 # app/services/methods.py
 
 from sympy import * 
+from sympy.parsing.latex import parse_latex
 import numpy as np
 import json
 
