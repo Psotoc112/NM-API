@@ -13,7 +13,8 @@ def get_biseccion(params: biseccionParams):
     xi = params.xi
     xf = params.xf
     tol = params.tol
-    result = biseccion(eqn,xi,xf,tol)
+    niter = params.niter
+    result = biseccion(eqn,xi,xf,tol,niter)
     return {"result": result}
 
 @router.post("/raicesMultiples")
@@ -24,7 +25,8 @@ def get_raicesMultiples(params: raicesMParams):
     eqn2 = params.eqn2
     xo = params.xo
     tol = params.tol
-    result = raicesMultiples(eqn,eqn1,eqn2,xo,tol)
+    niter = params.niter
+    result = raicesMultiples(eqn,eqn1,eqn2,xo,tol,niter)
     return {"result": result}
 
 @router.post("/reglaFalsa")
@@ -34,7 +36,8 @@ def get_reglaFalsa(params: reglaFalsaParams):
     xi = params.xi
     xf = params.xf
     tol = params.tol
-    result = reglaFalsa(eqn,xi,xf,tol)
+    niter = params.niter
+    result = reglaFalsa(eqn,xi,xf,tol,niter)
     return {"result": result}
 
 @router.post("/newton")
@@ -44,7 +47,8 @@ def get_newton(params: newtonParams):
     eqn1 = params.eqn1
     xo = params.xo
     tol = params.tol
-    result = newton(eqn,eqn1,xo,tol)
+    niter = params.niter
+    result = newton(eqn,eqn1,xo,tol,niter)
     return {"result": result}
 
 @router.post("/puntoFijo")

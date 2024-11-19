@@ -8,6 +8,7 @@ class biseccionParams(BaseModel):
     xi: float
     xf: float
     tol: float
+    niter: int
 
 class raicesMParams(BaseModel):
     eqn: str
@@ -15,24 +16,28 @@ class raicesMParams(BaseModel):
     eqn2: str
     xo: float
     tol: float
+    niter: int
 
 class reglaFalsaParams(BaseModel):
     eqn: str
     xi: float
     xf: float
     tol: float
+    niter: int
 
 class newtonParams(BaseModel):
     eqn: str
     eqn1: str
     xo: float
     tol: float
+    niter: int
 
 class puntoFParams(BaseModel):
     eqn: str
     eqn2: str
     valorA: float
     tol: float
+    niter: int
 
 class spline1Params(BaseModel):
     x: List[float]

@@ -4,12 +4,11 @@ from sympy import *
 import numpy as np
 import json
 
-def biseccion(eqn, xi, xf, tol):
+def biseccion(eqn, xi, xf, tol, niter):
     eqn = sympify(eqn)  
     f = lambdify('x', eqn, "numpy") 
     
     iteraciones = [] 
-    niter = 100000
     xm = 0
     cont = 0
     err = abs(xi - xf)
@@ -65,7 +64,7 @@ def biseccion(eqn, xi, xf, tol):
             "mensaje": "No se obtuvo solución"
         }
 
-def raicesMultiples(eqn_,eqn1_,eqn2_,xo,tol):
+def raicesMultiples(eqn_,eqn1_,eqn2_,xo,tol,niter):
 
     eqn=sympify(eqn_)
     f = lambda x:eqn.subs({'x':x})
@@ -99,11 +98,10 @@ def raicesMultiples(eqn_,eqn1_,eqn2_,xo,tol):
     else:
         return("El método no logró converger")
     
-def reglaFalsa(eqn_, xi, xf, tol_):
+def reglaFalsa(eqn_, xi, xf, tol_,niter):
     eqn = sympify(eqn_)  
     f = lambdify('x', eqn, "numpy")  
     iteraciones = []  
-    niter = 100000
     xr = 0
     cont = 0
     err = abs(xi - xf)
@@ -160,14 +158,13 @@ def reglaFalsa(eqn_, xi, xf, tol_):
             "mensaje": "No se obtuvo solución"
         }
 
-def newton(eqn_, eqn1_, xo, tol):
+def newton(eqn_, eqn1_, xo, tol,niter):
     eqn = sympify(eqn_)  
     f = lambdify('x', eqn, "numpy")  
     
     eqn1 = sympify(eqn1_) 
     g = lambdify('x', eqn1, "numpy") 
-    
-    niter = 100000
+
     cont = 0
     err = tol + 1
     iteraciones = [] 
