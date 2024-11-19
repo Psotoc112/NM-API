@@ -9,6 +9,7 @@ origins = [
     "http://localhost",
     "http://localhost:5173",
     "http://localhost:3000",
+    "https://nm-api.onrender.com",
 ]
 
 app.add_middleware(
