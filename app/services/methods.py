@@ -153,37 +153,62 @@ def reglaFalsa(eqn_, xi, xf, tol_):
             "mensaje": "No se obtuvo solución"
         }
 
-def newton(eqn_,eqn1_,xo,tol):    
-
-    eqn = sympify(eqn_)
-    f = lambda x: eqn.subs({'x': x})
+def newton(eqn_, eqn1_, xo, tol):
+    eqn = sympify(eqn_)  # Symbolic equation for f(x)
+    f = lambdify('x', eqn, "numpy")  # Convert equation to a callable function f(x)
     
-    eqn1 = sympify(eqn1_)
-    g = lambda x: eqn1.subs({'x': x})
+    eqn1 = sympify(eqn1_)  # Symbolic equation for f'(x)
+    g = lambdify('x', eqn1, "numpy")  # Convert equation to a callable function f'(x)
     
-
     niter = 100000
     cont = 0
     err = tol + 1
+    iteraciones = []  # List to store iteration data
     
-
-    while (err > tol) and (niter > cont):
+    while err > tol and cont < niter:
         fxo = f(xo)
         gxo = g(xo)
         
-        if gxo == 0:
-            return "Derivada igual a cero en: " + str(cont) + " iteraciones"
+        if gxo == 0:  # Derivative equal to zero check
+            return {
+                "iteraciones": iteraciones,
+                "raiz": None,
+                "mensaje": "Derivada igual a cero en: " + str(cont) + " iteraciones"
+            }
         
-        xn = xo - fxo / gxo
-        err = abs(xn - xo)
-        xo = xn
-        cont += 1
-    
+        xn = xo - fxo / gxo  # Newton's method iteration
+        f_x0 = fxo
+        f_prime_x0 = gxo
+        x1 = xn
+        error = abs(x1 - xo)
+        
+        # Store iteration data
+        iteraciones.append({
+            "iteracion": cont + 1,
+            "x0": xo,
+            "f_x0": f_x0,
+            "f_prime_x0": f_prime_x0,
+            "x1": x1,
+            "error": error
+        })
+        
+        xo = xn  # Update x0 for next iteration
+        err = error
+        cont += 1  # Increment iteration count
 
+    # Final result
     if err <= tol:
-        return "Se encontró una raíz en: " + str(xo) + " con: " + str(cont) + " iteraciones"
+        return {
+            "iteraciones": iteraciones,
+            "raiz": xn,
+            "mensaje": "Raíz encontrada con la tolerancia especificada."
+        }
     else:
-        return "El método no logró converger"    
+        return {
+            "iteraciones": iteraciones,
+            "raiz": None,
+            "mensaje": "El método no logró converger"
+        }
 
 def puntoFijo(eqn_,eqn2_,valorA_,tol_):
 
