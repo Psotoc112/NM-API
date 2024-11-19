@@ -2,39 +2,68 @@
 
 from sympy import * 
 import numpy as np
+import json
 
-
-def biseccion(eqn,xi,xf,tol):
-
-    eqn = sympify(eqn)
-    f = lambda x:eqn.subs({'x':x})
+def biseccion(eqn, xi, xf, tol):
+    eqn = sympify(eqn)  
+    f = lambdify('x', eqn, "numpy") 
+    
+    iteraciones = [] 
     niter = 100000
     xm = 0
-    if(f(xi)*f(xf) == 0):
-        if(f(xi) == 0):
-            return("Xi es raíz")
+    cont = 0
+    err = abs(xi - xf)
+
+   
+    if f(xi) * f(xf) == 0:
+        if f(xi) == 0:
+            return {"raiz": xi, "mensaje": "Xi es raíz"}
         else:
-            return("Xf es raíz")
-    elif(f(xi)*f(xf) > 0):
-        return("No se puede asegurar una raíz")
-    else:
-        xm = (xf+xi)/2
-        cont = 0
+            return {"raiz": xf, "mensaje": "Xf es raíz"}
+    elif f(xi) * f(xf) > 0:
+        return {"raiz": None, "mensaje": "No se puede asegurar una raíz"}
+
+ 
+    while err > tol and niter > cont:
+        xm = (xi + xf) / 2
+        f_xm = f(xm)
+
+        iteraciones.append({
+            "iteracion": cont + 1,
+            "a": xi,
+            "b": xf,
+            "xm": xm,
+            "f_xm": f_xm,
+            "error": err
+        })
+        
+        if f(xi) * f_xm < 0:
+            xf = xm
+        else:
+            xi = xm
+        
         err = abs(xi - xf)
-        while(err > tol and niter > cont and f(xm) != 0):
-            if(f(xi)*f(xm) < 0):
-                xf = xm
-            else:
-                xi = xm
-            xm = (xf+xi)/2
-            err = abs(xm - xi)
-            cont= cont + 1
-        if(f(xm) == 0):
-           return("xm es raíz: " + str(xm) +"\n Iteraciones realizadas: " + str(cont))
-        elif(err < tol):
-            return("xm es raíz con tolerancia: " + str(tol) + " con xm: " + str(xm) + " con " + str(cont) + " iteraciones realizadas" )
-        else:
-            return("No se obtuvo solución")
+        cont += 1
+
+    # Final result
+    if abs(f(xm)) < tol:
+        return {
+            "iteraciones": iteraciones,
+            "raiz": xm,
+            "mensaje": "Raíz encontrada con la tolerancia especificada."
+        }
+    elif err < tol:
+        return {
+            "iteraciones": iteraciones,
+            "raiz": xm,
+            "mensaje": "Xm es raíz con tolerancia: " + str(xm)
+        }
+    else:
+        return {
+            "iteraciones": iteraciones,
+            "raiz": None,
+            "mensaje": "No se obtuvo solución"
+        }
 
 def raicesMultiples(eqn_,eqn1_,eqn2_,xo,tol):
 
