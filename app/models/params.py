@@ -43,6 +43,10 @@ class spline1Params(BaseModel):
     x: List[float]
     y: List[float]
 
+class vanderParams(BaseModel):
+    x: List[float]
+    y: List[float]
+
 class croutParams(BaseModel):
     A: List[List[float]]
     b: List[float]

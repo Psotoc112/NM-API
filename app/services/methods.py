@@ -886,3 +886,17 @@ def secant_method(f, x0, x1, tol=1e-6, max_iter=100):
         "message": "The Secant method did not converge within the maximum number of iterations"
     }
 
+def vandermonde(x, y):
+    # Resolvemos el sistema V * a = y
+    xnp = np.array(x)
+    ynp = np.array(y)
+    vandermonde = np.vander(xnp, increasing=True)
+    
+    coeficientes = np.linalg.solve(vandermonde, ynp)
+    polinomio = " + ".join([f"{coef:.6f}x^{len(coeficientes)-i-1}" if len(coeficientes)-i-1 > 0 else f"{coef:.6f}" 
+                      for i, coef in enumerate(coeficientes)])
+    
+    result = [polinomio, coeficientes.tolist()]
+    #print("\nPolinomio:")
+    #print(polinomio)
+    return result

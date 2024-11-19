@@ -299,3 +299,15 @@ def get_secant(params: SecantParams):
         raise HTTPException(status_code=400, detail=str(e))
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))
+
+@router.post("/vandermonde")
+def get_vandermonde(params: vanderParams):
+    x = params.x
+    y = params.y
+    result = vandermonde(x,y)
+    return result
+
+@router.post("/test")
+def test(params: spline1Params):
+    x = params.x
+    return x

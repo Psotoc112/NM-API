@@ -1,8 +1,9 @@
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
+from app.api.endpoints import router as api_router
 
 app = FastAPI()
-
+app.include_router(api_router)
 # Configuración de CORS
 origins = [
     "http://localhost",
