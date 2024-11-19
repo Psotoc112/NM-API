@@ -88,7 +88,14 @@ def raicesMultiples(eqn_,eqn1_,eqn2_,xo,tol):
         cont = cont + 1
 
     if(err <= tol):
-        return("se encontró una raíz en: " + str(xo) + " en: " +str(cont) + " iteraciones")
+        return {
+            "raiz": str(xo),  
+            "iteraciones": str(cont),
+            "mensaje": "Raíz encontrada con la tolerancia especificada."
+            
+        }
+
+        #return("se encontró una raíz en: " + str(xo) + " en: " +str(cont) + " iteraciones")
     else:
         return("El método no logró converger")
     
@@ -154,35 +161,34 @@ def reglaFalsa(eqn_, xi, xf, tol_):
         }
 
 def newton(eqn_, eqn1_, xo, tol):
-    eqn = sympify(eqn_)  # Symbolic equation for f(x)
-    f = lambdify('x', eqn, "numpy")  # Convert equation to a callable function f(x)
+    eqn = sympify(eqn_)  
+    f = lambdify('x', eqn, "numpy")  
     
-    eqn1 = sympify(eqn1_)  # Symbolic equation for f'(x)
-    g = lambdify('x', eqn1, "numpy")  # Convert equation to a callable function f'(x)
+    eqn1 = sympify(eqn1_) 
+    g = lambdify('x', eqn1, "numpy") 
     
     niter = 100000
     cont = 0
     err = tol + 1
-    iteraciones = []  # List to store iteration data
+    iteraciones = [] 
     
     while err > tol and cont < niter:
         fxo = f(xo)
         gxo = g(xo)
         
-        if gxo == 0:  # Derivative equal to zero check
+        if gxo == 0:  
             return {
                 "iteraciones": iteraciones,
                 "raiz": None,
                 "mensaje": "Derivada igual a cero en: " + str(cont) + " iteraciones"
             }
         
-        xn = xo - fxo / gxo  # Newton's method iteration
+        xn = xo - fxo / gxo 
         f_x0 = fxo
         f_prime_x0 = gxo
         x1 = xn
         error = abs(x1 - xo)
         
-        # Store iteration data
         iteraciones.append({
             "iteracion": cont + 1,
             "x0": xo,
@@ -192,9 +198,9 @@ def newton(eqn_, eqn1_, xo, tol):
             "error": error
         })
         
-        xo = xn  # Update x0 for next iteration
+        xo = xn  
         err = error
-        cont += 1  # Increment iteration count
+        cont += 1 
 
     # Final result
     if err <= tol:
