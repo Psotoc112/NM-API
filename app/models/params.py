@@ -78,8 +78,6 @@ class JacobiParams(BaseModel):
     tol: float                  
     niter: int                   
 
-from pydantic import BaseModel
-
 class IncrementalSearchParams(BaseModel):
     funcion: str     
     x0: float        
