@@ -92,41 +92,66 @@ def raicesMultiples(eqn_,eqn1_,eqn2_,xo,tol):
     else:
         return("El método no logró converger")
     
-def reglaFalsa(eqn_,xi_,xf_,tol_):
-
-    eqn = sympify(eqn_)
-    f = lambda x:eqn.subs({'x':x})
-    xi = xi_
-    xf = xf_
+def reglaFalsa(eqn_, xi, xf, tol_):
+    eqn = sympify(eqn_)  
+    f = lambdify('x', eqn, "numpy")  
+    iteraciones = []  
     niter = 100000
-    tol = tol_
-    xm = 0
-    
-    if(f(xi)*f(xf) == 0):
-        if(f(xi) == 0):
-            return("Xi es raíz")
+    xr = 0
+    cont = 0
+    err = abs(xi - xf)
+
+ 
+    if f(xi) * f(xf) == 0:
+        if f(xi) == 0:
+            return {"raiz": xi, "mensaje": "Xi es raíz"}
         else:
-            return("Xf es raíz")
-    elif(f(xi)*f(xf) > 0):
-        return("No se puede asegurar una raíz")
+            return {"raiz": xf, "mensaje": "Xf es raíz"}
+    elif f(xi) * f(xf) > 0:
+        return {"raiz": None, "mensaje": "No se puede asegurar una raíz"}
+
+  
+    while err > tol_ and niter > cont:
+        xr = xf - (f(xf) * (xf - xi)) / (f(xf) - f(xi))  
+        f_xr = f(xr)  
+        
+       
+        iteraciones.append({
+            "iteracion": cont + 1,
+            "a": xi,
+            "b": xf,
+            "xr": xr,
+            "f_xr": f_xr,
+            "error": err
+        })
+        
+        if f(xi) * f_xr < 0:
+            xf = xr
+        else:
+            xi = xr
+        
+        err = abs(xr - xi)  # Calculate error
+        cont += 1
+
+    # Final result
+    if abs(f(xr)) < tol_:
+        return {
+            "iteraciones": iteraciones,
+            "raiz": xr,
+            "mensaje": "Raíz encontrada con la tolerancia especificada."
+        }
+    elif err < tol_:
+        return {
+            "iteraciones": iteraciones,
+            "raiz": xr,
+            "mensaje": "Xm es raíz con tolerancia: " + str(xr)
+        }
     else:
-        xm = xf - ( f(xf) * ( xf - xi ) ) / ( f(xf) - f(xi) )
-        cont = 0
-        err = abs(xi - xf)
-        while(err > tol and niter > cont and f(xm) != 0):
-            if(f(xi)*f(xm) < 0):
-                xf = xm
-            else:
-                xi = xm
-            xm = xf - ( f(xf) * ( xf - xi ) ) / ( f(xf) - f(xi) )
-            err = abs(xm - xi)
-            cont= cont + 1
-        if(f(xm) == 0):
-            return("xm es raíz: " + str(xm) +"\n Iteraciones realizadas: " + str(cont))
-        elif(err < tol):
-            return("xm es raíz con tolerancia: " + str(tol) + " con xm: " + str(xm) +"\nIteraciones realizadas: " + str(cont))
-        else:
-            return("No se obtuvo solución")
+        return {
+            "iteraciones": iteraciones,
+            "raiz": None,
+            "mensaje": "No se obtuvo solución"
+        }
 
 def newton(eqn_,eqn1_,xo,tol):    
 
