@@ -1,69 +1,85 @@
 # app/services/methods.py
+import math
 
-from sympy import * 
+from sympy import *
 from sympy.parsing.latex import parse_latex
 import numpy as np
 import json
 
+
 def biseccion(eqn, xi, xf, tol, niter):
-    eqn = sympify(eqn)  
-    f = lambdify('x', eqn, "numpy") 
-    
-    iteraciones = [] 
-    xm = 0
-    cont = 0
-    err = abs(xi - xf)
+    try:
+        # Convertir la expresión LaTeX a una expresión simbólica usando parse_latex
+        eqn_sym = parse_latex(eqn, backend='lark')
 
-   
-    if f(xi) * f(xf) == 0:
-        if f(xi) == 0:
-            return {"raiz": xi, "mensaje": "Xi es raíz"}
-        else:
-            return {"raiz": xf, "mensaje": "Xf es raíz"}
-    elif f(xi) * f(xf) > 0:
-        return {"raiz": None, "mensaje": "No se puede asegurar una raíz"}
+        # Definir la variable 'x' para la ecuación
+        x = Symbol('x')
 
- 
-    while err > tol and niter > cont:
-        xm = (xi + xf) / 2
-        f_xm = f(xm)
+        # Convertir la ecuación simbólica en una función numérica utilizando lambdify
+        f = lambdify(x, eqn_sym, "numpy")
 
-        iteraciones.append({
-            "iteracion": cont + 1,
-            "a": xi,
-            "b": xf,
-            "xm": xm,
-            "f_xm": f_xm,
-            "error": err
-        })
-        
-        if f(xi) * f_xm < 0:
-            xf = xm
-        else:
-            xi = xm
-        
+        iteraciones = []  # Para almacenar los datos de cada iteración
+        xm = 0
+        cont = 0
         err = abs(xi - xf)
-        cont += 1
 
-    # Final result
-    if abs(f(xm)) < tol:
-        return {
-            "iteraciones": iteraciones,
-            "raiz": xm,
-            "mensaje": "Raíz encontrada con la tolerancia especificada."
-        }
-    elif err < tol:
-        return {
-            "iteraciones": iteraciones,
-            "raiz": xm,
-            "mensaje": "Xm es raíz con tolerancia: " + str(xm)
-        }
-    else:
-        return {
-            "iteraciones": iteraciones,
-            "raiz": None,
-            "mensaje": "No se obtuvo solución"
-        }
+        # Condición de salida si xi o xf son raíces exactas
+        if f(xi) * f(xf) == 0:
+            if f(xi) == 0:
+                return {"raiz": xi, "mensaje": "Xi es raíz"}
+            else:
+                return {"raiz": xf, "mensaje": "Xf es raíz"}
+
+        # Si no hay cambio de signo entre f(xi) y f(xf), no hay certeza de una raíz
+        elif f(xi) * f(xf) > 0:
+            return {"raiz": None, "mensaje": "No se puede asegurar una raíz"}
+
+        # Iniciar el ciclo de bisección
+        while err > tol and niter > cont:
+            xm = (xi + xf) / 2
+            f_xm = f(xm)
+
+            iteraciones.append({
+                "iteracion": cont + 1,
+                "a": xi,
+                "b": xf,
+                "xm": xm,
+                "f_xm": f_xm,
+                "error": err
+            })
+
+            # Actualizar el intervalo según el signo de f(xm)
+            if f(xi) * f_xm < 0:
+                xf = xm
+            else:
+                xi = xm
+
+            # Calcular el error y aumentar el contador de iteraciones
+            err = abs(xi - xf)
+            cont += 1
+
+        # Verificar el resultado final
+        if abs(f(xm)) < tol:
+            return {
+                "iteraciones": iteraciones,
+                "raiz": xm,
+                "mensaje": "Raíz encontrada con la tolerancia especificada."
+            }
+        elif err < tol:
+            return {
+                "iteraciones": iteraciones,
+                "raiz": xm,
+                "mensaje": "Xm es raíz con tolerancia: " + str(xm)
+            }
+        else:
+            return {
+                "iteraciones": iteraciones,
+                "raiz": None,
+                "mensaje": "No se obtuvo solución"
+            }
+    except Exception as e:
+        return {"error": str(e)}
+
 
 def raicesMultiples(eqn_,eqn1_,eqn2_,xo,tol,niter):
 
@@ -73,7 +89,7 @@ def raicesMultiples(eqn_,eqn1_,eqn2_,xo,tol,niter):
     _f = lambda x:eqn1.subs({'x':x})
     eqn2=sympify(eqn2_)
     __f = lambda x:eqn2.subs({'x':x})
-    
+
     niter = 100000
     cont = 0
     err = tol + 1
@@ -89,25 +105,25 @@ def raicesMultiples(eqn_,eqn1_,eqn2_,xo,tol,niter):
 
     if(err <= tol):
         return {
-            "raiz": str(xo),  
+            "raiz": str(xo),
             "iteraciones": str(cont),
             "mensaje": "Raíz encontrada con la tolerancia especificada."
-            
+
         }
 
         #return("se encontró una raíz en: " + str(xo) + " en: " +str(cont) + " iteraciones")
     else:
         return("El método no logró converger")
-    
+
 def reglaFalsa(eqn_, xi, xf, tol_,niter):
-    eqn = sympify(eqn_)  
-    f = lambdify('x', eqn, "numpy")  
-    iteraciones = []  
+    eqn = sympify(eqn_)
+    f = lambdify('x', eqn, "numpy")
+    iteraciones = []
     xr = 0
     cont = 0
     err = abs(xi - xf)
 
- 
+
     if f(xi) * f(xf) == 0:
         if f(xi) == 0:
             return {"raiz": xi, "mensaje": "Xi es raíz"}
@@ -116,12 +132,12 @@ def reglaFalsa(eqn_, xi, xf, tol_,niter):
     elif f(xi) * f(xf) > 0:
         return {"raiz": None, "mensaje": "No se puede asegurar una raíz"}
 
-  
+
     while err > tol_ and niter > cont:
-        xr = xf - (f(xf) * (xf - xi)) / (f(xf) - f(xi))  
-        f_xr = f(xr)  
-        
-       
+        xr = xf - (f(xf) * (xf - xi)) / (f(xf) - f(xi))
+        f_xr = f(xr)
+
+
         iteraciones.append({
             "iteracion": cont + 1,
             "a": xi,
@@ -130,12 +146,12 @@ def reglaFalsa(eqn_, xi, xf, tol_,niter):
             "f_xr": f_xr,
             "error": err
         })
-        
+
         if f(xi) * f_xr < 0:
             xf = xr
         else:
             xi = xr
-        
+
         err = abs(xr - xi)  # Calculate error
         cont += 1
 
@@ -160,33 +176,33 @@ def reglaFalsa(eqn_, xi, xf, tol_,niter):
         }
 
 def newton(eqn_, eqn1_, xo, tol,niter):
-    eqn = sympify(eqn_)  
-    f = lambdify('x', eqn, "numpy")  
-    
-    eqn1 = sympify(eqn1_) 
-    g = lambdify('x', eqn1, "numpy") 
+    eqn = sympify(eqn_)
+    f = lambdify('x', eqn, "numpy")
+
+    eqn1 = sympify(eqn1_)
+    g = lambdify('x', eqn1, "numpy")
 
     cont = 0
     err = tol + 1
-    iteraciones = [] 
-    
+    iteraciones = []
+
     while err > tol and cont < niter:
         fxo = f(xo)
         gxo = g(xo)
-        
-        if gxo == 0:  
+
+        if gxo == 0:
             return {
                 "iteraciones": iteraciones,
                 "raiz": None,
                 "mensaje": "Derivada igual a cero en: " + str(cont) + " iteraciones"
             }
-        
-        xn = xo - fxo / gxo 
+
+        xn = xo - fxo / gxo
         f_x0 = fxo
         f_prime_x0 = gxo
         x1 = xn
         error = abs(x1 - xo)
-        
+
         iteraciones.append({
             "iteracion": cont + 1,
             "x0": xo,
@@ -195,10 +211,10 @@ def newton(eqn_, eqn1_, xo, tol,niter):
             "x1": x1,
             "error": error
         })
-        
-        xo = xn  
+
+        xo = xn
         err = error
-        cont += 1 
+        cont += 1
 
     # Final result
     if err <= tol:
@@ -218,14 +234,14 @@ def puntoFijo(eqn_,eqn2_,valorA_,tol_):
 
     eqn = sympify(eqn_)
     fx = lambda x:eqn.subs({'x':x})
-    
+
     eqn2 = sympify(eqn2_)
     gx = lambda x:eqn2.subs({'x':x})
-    
+
     a = valorA_
     tolera = tol_
     iteramax = 100000
-    i = 0 
+    i = 0
     b = gx(a)
     tramo = abs(b-a)
 
@@ -235,29 +251,29 @@ def puntoFijo(eqn_,eqn2_,valorA_,tol_):
         tramo = abs(b-a)
         i = i + 1
     respuesta = b
-    
+
     if (i>=iteramax ):
         respuesta = np.nan
-        
+
     return("la raiz es: " + str(respuesta), "Error: ", tramo)
 
 def splineLineal(x, y):
     trazadores = []
     n = len(x)
-    
+
     for i in range(n - 1):
-     
-        m = (y[i + 1] - y[i]) / (x[i + 1] - x[i]) 
-        b = y[i] - m * x[i] 
+
+        m = (y[i + 1] - y[i]) / (x[i + 1] - x[i])
+        b = y[i] - m * x[i]
         trazadores.append(f"{m:.6f}x + {b:.6f}")
-    
+
     return trazadores
 
 def sustitucion_progresiva(L, b):
     n = len(b)
     y = np.zeros(n)
     for i in range(n):
-        y[i] = (b[i] - sum(L[i][j] * y[j] for j in range(i))) / L[i][i] 
+        y[i] = (b[i] - sum(L[i][j] * y[j] for j in range(i))) / L[i][i]
     return y
 
 def sustitucion_regresiva(U, y):
@@ -272,7 +288,7 @@ def crout(A,b):
     bnp = np.array(b)
     n = Anp.shape[0]
     L = np.zeros_like(Anp)
-    U = np.eye(n)  
+    U = np.eye(n)
 
     for j in range(n):
         for i in range(j, n):
@@ -291,7 +307,7 @@ def dolittle(A,b):
     Anp = np.array(A)
     bnp = np.array(b)
     n = Anp.shape[0]
-    L = np.eye(n)  
+    L = np.eye(n)
     U = np.zeros_like(Anp)
 
     for i in range(n):
@@ -312,14 +328,14 @@ def luSimple(A,b):
     n = Anp.shape[0]
     L = np.zeros_like(Anp)
     U = np.zeros_like(Anp)
-    
+
     for i in range(n):
         L[i][i] = 1
         for j in range(i, n):
             U[i][j] = A[i][j] - sum(L[i][k] * U[k][j] for k in range(i))
         for j in range(i + 1, n):
             L[j][i] = (A[j][i] - sum(L[j][k] * U[k][i] for k in range(i))) / U[i][i]
-    
+
     y = sustitucion_progresiva(L, bnp)
 
     x = sustitucion_regresiva(U, y)
@@ -337,20 +353,20 @@ def luPivoteo(A,b):
 
         max_index = np.argmax(np.abs(U[i:, i])) + i
         if max_index != i:
-          
+
             U[[i, max_index], :] = U[[max_index, i], :]
             P[[i, max_index], :] = P[[max_index, i], :]
 
             L[[i, max_index], :i] = L[[max_index, i], :i]
-        
+
         L[i][i] = 1
         for j in range(i + 1, n):
             L[j][i] = U[j][i] / U[i][i]
             U[j] -= L[j][i] * U[i]
-    
+
     y = sustitucion_progresiva(L, np.dot(P, bnp))  # Usar P*b para b permutado
     x = sustitucion_regresiva(U, y)
-    
+
     return {"L": L.tolist(), "U": U.tolist(),"P:": P.tolist() , "x": x.tolist()}
 
 def polinomio_Newton(x_valor, y_valor):
@@ -366,17 +382,17 @@ def polinomio_Newton(x_valor, y_valor):
     """
     # Crear la variable simbólica x
     x = Symbol('x')
-    
+
     # Número de puntos
     n = len(x_valor)
-    
+
     # Matriz de diferencias divididas
     diferencias_divididas = [[0 for _ in range(n)] for _ in range(n)]
-    
+
     # Inicializar la primera columna con los valores de y
     for i in range(n):
         diferencias_divididas[i][0] = y_valor[i]
-    
+
     # Calcular las diferencias divididas
     for j in range(1, n):
         for i in range(n - j):
@@ -388,24 +404,24 @@ def polinomio_Newton(x_valor, y_valor):
             diferencias_divididas[i][j] = (
                 diferencias_divididas[i + 1][j - 1] - diferencias_divididas[i][j - 1]
             ) / denominador
-    
+
     # Construir el polinomio de Newton
     polinomio = diferencias_divididas[0][0]
     termino = 1  # Acumula los términos del polinomio
     for i in range(1, n):
         termino *= (x - x_valor[i - 1])
         polinomio += diferencias_divididas[0][i] * termino
-    
+
     # Simplificar el polinomio
-    polinomio = sp.simplify(polinomio)
-    
+    polinomio = simplify(polinomio)
+
     return polinomio
 
 def lagrange(x_vals, y_vals):
     """
     Calcula el polinomio de Lagrange dados puntos x_vals y y_vals.
     """
-    x = sp.Symbol('x')
+    x = Symbol('x')
     n = len(x_vals)
 
     # Inicializa el polinomio como 0
@@ -470,7 +486,7 @@ def jacobi_method(matrix_a, vector_b, x0, tol, niter):
         "coefficient_matrix": C.tolist(),
         "spectral_radius": spectral_radius,
         "iterations": iterations,
-        "converges": converges,
+        "converges": bool(converges),
     }
 
 def procesar_funcion(funcion_str):
@@ -498,7 +514,7 @@ def busquedas_incrementales(funcion_str, x0, intervalo, tol, max_iter):
     # Procesar la función y convertirla en evaluable
     funcion_str = procesar_funcion(funcion_str)
     f = lambda x: eval(funcion_str, {"x": x, "sin": sin, "cos": cos, "exp": exp, "log": log, "math": math})
-    
+
     # Inicializar variables
     x_i = x0
     iteraciones = 0
@@ -516,7 +532,7 @@ def busquedas_incrementales(funcion_str, x0, intervalo, tol, max_iter):
             f_xi_next = f(x_i_next)
         except (ValueError, ZeroDivisionError) as e:
             return {"error": f"Error al evaluar f({x_i_next}): {str(e)}"}
-        
+
         # Calcular el error absoluto
         error_abs = abs(x_i_next - x_i)
         tabla.append({
@@ -535,7 +551,7 @@ def busquedas_incrementales(funcion_str, x0, intervalo, tol, max_iter):
                 "iteraciones": tabla,
                 "mensaje": f"Raíz aproximada en el intervalo [{x_i}, {x_i_next}]"
             }
-        
+
         # Verificar tolerancia
         if error_abs < tol:
             return {
@@ -786,6 +802,7 @@ def gauss_seidel_method(matrix_a, vector_b, x0, tol, niter):
     Returns:
         dict: Resultado con las iteraciones, matrices y convergencia.
     """
+
     A = np.array(matrix_a, dtype=float)
     b = np.array(vector_b, dtype=float).reshape((-1, 1))
     x0 = np.array(x0, dtype=float).reshape((-1, 1))
@@ -819,7 +836,7 @@ def gauss_seidel_method(matrix_a, vector_b, x0, tol, niter):
         "coefficient_matrix": C.tolist(),
         "spectral_radius": spectral_radius,
         "iterations": iterations,
-        "converges": converges,
+        "converges": bool(converges),
     }
 
 def secant_method(f, x0, x1, tol=1e-6, max_iter=100):
@@ -892,11 +909,11 @@ def vandermonde(x, y):
     xnp = np.array(x)
     ynp = np.array(y)
     vandermonde = np.vander(xnp, increasing=True)
-    
+
     coeficientes = np.linalg.solve(vandermonde, ynp)
-    polinomio = " + ".join([f"{coef:.6f}x^{len(coeficientes)-i-1}" if len(coeficientes)-i-1 > 0 else f"{coef:.6f}" 
+    polinomio = " + ".join([f"{coef:.6f}x^{len(coeficientes)-i-1}" if len(coeficientes)-i-1 > 0 else f"{coef:.6f}"
                       for i, coef in enumerate(coeficientes)])
-    
+
     result = [polinomio, coeficientes.tolist()]
     #print("\nPolinomio:")
     #print(polinomio)

@@ -146,7 +146,7 @@ def get_jacobi(params: JacobiParams):
         # Ejecutar el método de Jacobi
         result = jacobi_method(matrix_a, vector_b, x0, tol, niter)
 
-        return result
+        return {"results": result}
 
     except ValueError as e:
         raise HTTPException(status_code=500, detail=str(e))
@@ -167,7 +167,7 @@ def get_incremental_search(params: IncrementalSearchParams):
 
         # Ejecutar el método
         resultado = busquedas_incrementales(funcion, x0, intervalo, tol, max_iter)
-        return resultado
+        return {"result": resultado}
 
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))
@@ -187,7 +187,7 @@ def get_gaussian_elimination(params: GaussianEliminationParams):
 
         # Ejecutar el método de eliminación gaussiana
         resultado = eliminacion_gaussiana(A, b)
-        return resultado
+        return {"result": resultado}
 
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))
@@ -207,7 +207,7 @@ def get_partial_pivoting(params: PartialPivotingParams):
 
         # Ejecutar el método de pivoteo parcial
         resultado = pivoteo_parcial(A, b)
-        return resultado
+        return {"result": resultado}
 
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))
@@ -227,7 +227,7 @@ def get_total_pivoting(params: TotalPivotingParams):
 
         # Ejecutar el método de pivoteo total
         resultado = pivoteo_total(A, b)
-        return resultado
+        return {"result": resultado}
 
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))
@@ -247,7 +247,7 @@ def get_cholesky(params: CholeskyParams):
 
         # Ejecutar el método de Cholesky
         resultado = cholesky_method(A, b)
-        return resultado
+        return {"result": resultado}
 
     except ValueError as e:
         raise HTTPException(status_code=400, detail=str(e))
@@ -274,7 +274,7 @@ def get_gauss_seidel(params: GaussSeidelParams):
 
         # Ejecutar el método de Gauss-Seidel
         resultado = gauss_seidel_method(A, b, x0, tol, niter)
-        return resultado
+        return {"result": resultado}
 
     except ValueError as e:
         raise HTTPException(status_code=400, detail=str(e))
@@ -293,19 +293,35 @@ def get_secant(params: SecantParams):
 
         # Ejecutar el método de la secante
         resultado = secant_method(f, x0, x1, tol, max_iter)
-        return resultado
+        return {"result": resultado}
 
     except ValueError as e:
         raise HTTPException(status_code=400, detail=str(e))
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))
 
+from fastapi import HTTPException
+
 @router.post("/vandermonde")
 def get_vandermonde(params: vanderParams):
-    x = params.x
-    y = params.y
-    result = vandermonde(x,y)
-    return result
+    try:
+        x = params.x
+        y = params.y
+
+        # Intentar calcular el resultado usando vandermonde
+        result = vandermonde(x, y)
+        return result
+
+    except np.linalg.LinAlgError as e:
+        # Capturar errores específicos de álgebra lineal (matriz singular, etc.)
+        raise HTTPException(status_code=400, detail=f"Linear Algebra Error: {str(e)}")
+    except ValueError as e:
+        # Capturar errores de valores inválidos
+        raise HTTPException(status_code=400, detail=f"Value Error: {str(e)}")
+    except Exception as e:
+        # Capturar cualquier otro error inesperado
+        raise HTTPException(status_code=500, detail=f"Unexpected Error: {str(e)}")
+
 
 @router.post("/test")
 def test(params: spline1Params):
