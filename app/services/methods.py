@@ -10,7 +10,7 @@ import json
 def biseccion(eqn, xi, xf, tol, niter):
     try:
         # Convertir la expresión LaTeX a una expresión simbólica usando parse_latex
-        eqn_sym = parse_latex(eqn, backend='lark')
+        eqn_sym = sympify(eqn)
 
         # Definir la variable 'x' para la ecuación
         x = Symbol('x')
