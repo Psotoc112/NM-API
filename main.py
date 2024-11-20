@@ -10,7 +10,7 @@ origins = [
     "http://localhost:5173",
     "http://localhost:3000",
     "https://nm-api.onrender.com",
-    "matrixengine.vercel.app",
+    "https://matrixengine.vercel.app",
 ]
 
 app.add_middleware(
